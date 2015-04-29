@@ -210,7 +210,20 @@ class Client
     {
         $res = $this->sendFrame($frame);
 
-        return $this->getFrame();
+        $response = $this->getFrame();
+
+        sql_query(
+            sprintf(
+                "INSERT INTO nicmx_xml_logs (type, date_executed, request_xml, response_xml)
+                VALUES ('%s', %d, '%s', '%s')",
+                cfm(get_class($frame)),
+                time(),
+                addslashes(json_encode((string) $frame)),
+                addslashes(json_encode((string) $response))
+            )
+        );
+
+        return $response;
     }
 
     /**
